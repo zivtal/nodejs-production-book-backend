@@ -1,0 +1,10 @@
+export { DocumentJob } from '../../../../shared/models';
+export * from '../../position/models/create-job-position';
+export * from './base-post-job';
+export * from '../../position/models/create-job-position';
+export * from './create-post-job-req';
+export * from './job-search-post-jobs-req';
+export * from './get-job-details-res';
+export * from '../../position/models/update-job-position-req';
+export * from './search-post-job-res';
+export * from './update-post-job-req';

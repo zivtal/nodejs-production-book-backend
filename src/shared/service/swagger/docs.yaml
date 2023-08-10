@@ -1,0 +1,1432 @@
+openapi: '3.0.2'
+info:
+  title: API Title
+  version: '1.0'
+servers:
+  - url: http://localhost:3030
+paths:
+  /api/auth/signIn:
+      post:
+          tags:
+              - Auth
+          summary: Login a user to the system
+          requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          $ref: '#/components/schemas/LoginFormReq'
+          responses:
+              200:
+                  description: The user has logged in successfully
+                  content:
+                      application/json:
+                          schema:
+                              $ref: '#/components/schemas/User'
+              400:
+                  description: Login failed. Missing password or email
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: Login failed
+              401:
+                  description: Login failed. Wrong password or email
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: Login failed
+  /api/auth/signUp:
+      post:
+          tags:
+              - Auth
+          summary: Signup a new user to the system
+          requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          $ref: '#/components/schemas/SignupFormReq'
+          responses:
+              200:
+                  description: The user has signed up successfully
+                  content:
+                      application/json:
+                          schema:
+                              $ref: '#/components/schemas/User'
+              400:
+                  description: Signup failed. Missing credentials
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: MISSING_CREDENTIALS
+              401:
+                  description: Signup failed. User allready exist
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: ALREADY_EXISTS
+              500:
+                  description: Signup failed. Faild to write to db
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: FAILED
+
+  /api/auth/signOut:
+      post:
+          tags:
+              - Auth
+          summary: Log a user out of the system
+          responses:
+              200:
+                  description: The user has logged out successfully
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  msg:
+                                      type: string
+                                      default: Logged out successfully
+              500:
+                  description: Signout faild. Internal server error
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: Logout failed
+
+  /api/auth/emailValidate:
+      post:
+          tags:
+              - Auth
+          summary: Send an email to the user with validation code
+          requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                              type: object
+                              properties:
+                                  email:
+                                      type: string
+                                      default: baduka55@gmail.com
+                                      description: The user's email. To this email the validation code will be sent
+          responses:
+              200:
+                  description: The email was sent successfuly.
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  status:
+                                      type: string
+                                      default: sent
+                                      description: The status of the request. Sent, failed or otherwise.
+                                  code:
+                                      type: integer
+                                      default: 458687
+                                      description: The code that was sent to the user's email.
+              400:
+                  description: Validation error. Missing email
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: MISSING_CREDENTIALS
+              401:
+                  description: Auth error. User allready exist
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: ALREADY_EXISTS
+              500:
+                  description: The code was not sent. Server internal error
+                  content:
+                      application/json:
+                          schema:
+                              type: object
+                              properties:
+                                  err:
+                                      type: string
+                                      default: Some error
+  /api/employee/searchEmployees:
+    post:
+      tags:
+       - Employee
+      summary: User searches for an employee by first name, last name or company
+      requestBody:
+       required: false
+       content:
+         application/json:
+          schema:
+           $ref: '#/components/schemas/EmployeeSearchReq'
+      responses:
+       200:
+        description: Get an array of employees matching the search
+        content:
+         application/json:
+          schema:
+           type: array
+           items:
+             oneOf:
+              - $ref: '#/components/schemas/UserAttached'
+
+  /api/employee/getEmployeeDetails?id={id}:
+    get:
+      tags:
+       - Employee
+      summary: Get full employee details
+      parameters:
+        - in: query
+          name: id
+          schema:
+           type: string
+           default: 626d9773270a71c18e941c09
+          description: The id of the emloyee
+      responses:
+       200:
+        description: Get the employee details matching theid
+        content:
+         application/json:
+          schema:
+           $ref: '#/components/schemas/UserAttached'
+       400:
+        description: Missing Id
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: MISSING_CREDENTIALS
+
+  /api/employee/getAlbums:
+    get:
+      tags:
+       - Employee albums
+      summary: Get all employee albums
+      requestBody:
+       required: true
+       content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/GetAlbumsReq'
+      responses:
+       200:
+        description: Get an array of the contex employee albums
+        content:
+         application/json:
+          schema:
+           type: array
+           items:
+             oneOf:
+              - $ref: '#/components/schemas/Album'
+       400:
+        description: Missing Id
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: MISSING_CREDENTIALS
+
+  /api/employee/getAlbum/{id}:
+    get:
+      tags:
+       - Employee albums
+      summary: Get an album by id
+      parameters:
+       - in: path
+         name: id
+         schema:
+          type: string
+          default: 63b55a24896a7b20abc7c5f8
+         required: true
+         description: The id of the album
+      responses:
+       200:
+        description: Get the album with the requested id
+        content:
+         application/json:
+          schema:
+           $ref: '#/components/schemas/Album'
+       400:
+        description: Missing Id
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: MISSING_CREDENTIALS
+
+  /api/employee/addAlbum:
+    post:
+      tags:
+       - Employee albums
+      summary: Add a new album
+      requestBody:
+       required: true
+       content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/AddAlbumReq'
+      responses:
+       200:
+        description: The album was added
+        content:
+         application/json:
+          schema:
+           $ref: '#/components/schemas/Album'
+       400:
+        description: Missing fields. Type or name or both. || Wrong type. Not PHOTO or VIDEO
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: MISSING_FIELDS || ASSETS_TYPE_ERROR
+       401:
+        description: Unauthorized
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: UNAUTHORIZED
+
+  /api/employee/updateAlbum:
+    put:
+      tags:
+       - Employee albums
+      summary: Add a new album
+      requestBody:
+       required: true
+       content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/UpdateAlbumReq'
+      responses:
+       200:
+        description: The album was added
+        content:
+         application/json:
+          schema:
+           $ref: '#/components/schemas/Album'
+       400:
+        description: Missing Album id.
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: INVALID_ID
+       401:
+        description: Unauthorized
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: UNAUTHORIZED
+
+  /api/employee/updateAlbum/{id}:
+    delete:
+      tags:
+       - Employee albums
+      summary: The album was deleted
+      parameters:
+       - in: path
+         name: id
+         required: true
+         schema:
+          type: string
+          default: 63b55a24896a7b20abc7c5f8
+         description: The id of the album to remove
+      responses:
+       200:
+        description: The album deleted
+        content:
+         application/json:
+          schema:
+           type: string
+           default: To be completed
+       400:
+        description: Missing Album id.
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: MISSING_FIELDS, [id]
+       401:
+        description: Unauthorized
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: UNAUTHORIZED
+
+  /api/employee/getReviews:
+    get:
+      tags:
+       - Employee reviews
+      summary: Get employee reviews
+      requestBody:
+       required: true
+       content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/GetReviewsReq'
+      responses:
+       200:
+        description: The reviews matching the request.
+        content:
+         application/json:
+          schema:
+           type: array
+           items:
+             oneOf:
+              - $ref: '#/components/schemas/DbReview'
+
+  /api/employee/getReview/{id}:
+    get:
+      tags:
+       - Employee reviews
+      summary: Get a review by id
+      parameters:
+       - in: path
+         name: id
+         required: true
+         schema:
+          type: string
+          default: 63b5d338d95eb06194c83c66
+         description: The id of the review
+      responses:
+       200:
+        description: The reviews matching the id.
+        content:
+         application/json:
+          schema:
+           $ref: '#/components/schemas/DbReview'
+
+  /api/employee/addReview:
+    post:
+      tags:
+       - Employee reviews
+      summary: Add a new review
+      requestBody:
+       required: true
+       content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/AddReviewReq'
+      responses:
+       200:
+        description: The review was added
+        content:
+         application/json:
+          schema:
+           type: string
+           default: To be completed
+       401:
+        description: Unauthorized
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: UNAUTHORIZED
+
+  /api/employee/updateReview:
+    post:
+      tags:
+       - Employee reviews
+      summary: Update a review
+      requestBody:
+       required: true
+       content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/AddReviewReq'
+      responses:
+       200:
+        description: The album was updated
+        content:
+         application/json:
+          schema:
+           type: string
+           default: To be completed
+       401:
+        description: Unauthorized
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: UNAUTHORIZED
+
+  /api/employee/updateReview/{id}:
+    delete:
+      tags:
+       - Employee reviews
+      summary: Remove a review
+      parameters:
+       - in: path
+         name: id
+         required: true
+         schema:
+          type: string
+          default: 63b55a24896a7b20abc7c5f8
+         description: The id of the review to remove
+      responses:
+       200:
+        description: The review deleted
+        content:
+         application/json:
+          schema:
+           type: string
+           default: To be completed
+       401:
+        description: Unauthorized
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: UNAUTHORIZED
+  /api/job/listSkills:
+    get:
+      tags:
+          - Skill
+      summary: Returns the list of all the skills
+      responses:
+          200:
+              description: All skills were retrieved successfully
+              content:
+                  aplication/json:
+                      schema:
+                          type: array
+                          items:
+                              $ref: '#/components/schemas/listSkills'
+          500:
+              description: Can't get skills from db
+              content:
+                  aplication/json:
+                      schema:
+                          type: object
+                          properties:
+                              errors:
+                                  type: array
+                                  items:
+                                      type: object
+                                      properties:
+                                          message:
+                                              type: string
+                                              default: some error
+
+
+  /api/employee/getJobDetails/{id}:
+    get:
+      tags:
+       - Job
+      summary: Get full job details
+      parameters:
+        - in: path
+          required: true
+          name: id
+          schema:
+           type: string
+           default: 63b54ceef54040bc4e66c7ba
+          description: The id of the job
+      responses:
+       200:
+        description: Get the employee details matching theid
+        content:
+         application/json:
+          schema:
+           $ref: '#/components/schemas/PostJobDetailsRes'
+       401:
+        description: Unauthorized
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+             err:
+              type: string
+              default: UNAUTHORIZED
+
+  /api/job/createJobPost:
+    post:
+      tags:
+       - Job
+      summary: Create a new job post
+      requestBody:
+       required: true
+       content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/CreatePostJobReq'
+      responses:
+       200:
+        description: Job post was created
+        content:
+         application/json:
+          schema:
+           type: object
+           properties:
+            id:
+             type: string
+             description: The id of the job post that was created
+             default: 63b54ceef54040bc4e66c7ba
+       401:
+           description: Unauthorized
+           content:
+            application/json:
+             schema:
+              type: object
+              properties:
+                err:
+                 type: string
+                 default: UNAUTHORIZED
+
+  /api/job/searchPostJob:
+    post:
+      tags:
+       - Job
+      summary: Get all the job posts that answer the request
+      requestBody:
+       required: true
+       content:
+        application/json:
+         schema:
+          $ref: '#/components/schemas/SearchPostJobsReq'
+      responses:
+       200:
+        description: Request finished
+        content:
+         application/json:
+          schema:
+           type: array
+           items:
+            $ref: '#components/schemas/PostJobDetailsRes'
+
+  /api/job/getPositionDetails/{id}:
+    get:
+     tags:
+      - Positions
+     parameters:
+      - in: path
+        name: id
+        schema:
+         type: string
+         default: 63b55a24896a7b20abc7c5f8
+        required: true
+        description: The id of the position
+     responses:
+      200:
+       description: Get the position with the requested id
+       content:
+        application/json:
+         schema:
+          $ref: '#components/schemas/Position'
+  /api/job/searchPositions:
+    post:
+     tags:
+      - Positions
+     summary: Get positions by query search
+     requestBody:
+      required: true
+      content:
+       application/json:
+        schema:
+         $ref: '#/components/schemas/SearchPositionReq'
+     responses:
+      200:
+       description: request finished
+       content:
+        application/json:
+         schema:
+          type: array
+          items:
+           $ref: '#components/schemas/Position'
+
+components:
+  schemas:
+    LoginFormReq:
+      type: object
+      required:
+          - email
+          - password
+      properties:
+          email:
+              type: string
+              description: The user's email
+              default: baduka55@gmail.com
+          password:
+              type: string
+              description: The user's password
+              default: avi123
+    SignupFormReq:
+        type: object
+        required:
+            - password
+            - firstName
+            - lastName
+            - email
+            - emailValidateCode
+            - phone
+        properties:
+            email:
+              type: string
+              description: The user's email
+              default: baduka55@gmail.com
+            password:
+                type: string
+                description: The user's password
+                default: avi123
+            firstName:
+              type: string
+              default: avi
+              description: The user's first name
+            lastName:
+              type: string
+              default: isakov
+              description: The user's last name
+            nickname:
+              type: string
+              default: aviavi
+              description: The user's chosen nickname
+            company:
+              type: string
+              default: corp
+              description: The user's company name
+            location:
+              $ref: '#/components/schemas/UserLocation'
+            emailValidateCode:
+                type: integer
+                description: A 6 digits verification code that was sent to the user's email
+                default: 756842
+            phone:
+                type: string
+                description: The user's phone number
+                default: 0542584695
+            birthday:
+                type: number
+                description: Timestamp
+                default: undefined
+            gender:
+                type: string
+                description: The user's gender
+                default: MALE
+            skills:
+              type: array
+              items:
+                type: string
+              default: ['WEDDING_PHOTOGRAPHER']
+    User:
+        type: object
+        properties:
+          _id:
+            type: string
+            default: 63a0ed9ff6d09ea57f5794fd
+            description: The user's id in mongoDB
+          firstName:
+            type: string
+            default: avi
+            description: The user's first name
+          lastName:
+            type: string
+            default: isakov
+            description: The user's last name
+          nickname:
+            type: string
+            default: aviavi
+            description: The user's chosen nickname
+          company:
+            type: string
+            default: corp
+            description: The user's company name
+          cover:
+            type: string
+            default: https://example-link.com
+            description: Link to user's cover photo
+          avatar:
+            type: string
+            default: https://example-link.com
+            description: Link to user's avatar photo
+    UserLocation:
+      type: object
+      description: An object describing the user's address
+      required:
+       - coordinate
+      properties:
+       coordinate:
+        type: array
+        items:
+         type: integer
+        default: [5, 5]
+       place:
+        type: string
+        default: some place
+       address:
+        type: string
+        default: Ha roim 57 rishon lezion
+       postCode:
+        type: integer
+        default: 7566095
+        description: The user's postal code
+    UserAttached:
+      type: object
+      required:
+       - _id
+       - firstName
+       - lastName
+      properties:
+        _id:
+          type: string
+          default: 63a0ed9ff6d09ea57f5794fd
+          description: The user's id in mongoDB
+        firstName:
+          type: string
+          default: avi
+          description: The user's first name
+        lastName:
+          type: string
+          default: isakov
+          description: The user's last name
+        nickname:
+          type: string
+          default: aviavi
+          description: The user's chosen nickname
+        company:
+          type: string
+          default: corp
+          description: The user's company name
+        cover:
+          type: string
+          default: https://example-link.com
+          description: Link to user's cover photo
+        avatar:
+          type: string
+          default: https://example-link.com
+          description: Link to user's avatar photo
+        verified:
+          type: boolean
+          default: false
+          description: Is user verified
+        rate:
+          type: integer
+          default: 3
+          description: User avg rate
+        reviews:
+          type: integer
+          default: 15
+          description: User total reviews
+        skills:
+          type: array
+          items:
+           type: string
+           default: WEDDING_VIDEOGRAPHER
+          description: User skills
+        wage:
+          type: object
+          properties:
+           includeTax:
+            type: boolean
+            default: 17
+           currencyType:
+            type: string
+            default: NIS
+           hourly:
+            type: integer
+            default: 50
+           daily:
+            type: integer
+            default: 800
+          description: User wage details
+    EmployeeSearchReq:
+     type: object
+     properties:
+      search:
+       type: string
+       default: ''
+       description: A string to search in the employee name or company
+      page:
+        $ref: '#/components/schemas/Paging'
+    GetAlbumsReq:
+     type: object
+     required:
+      - id
+     properties:
+      id:
+       type: string
+       default: 63ae06ff3269ea78ef1a7ac2
+       description: The employee id
+      page:
+        $ref: '#/components/schemas/Paging'
+    AddAlbumReq:
+     type: object
+     required:
+      - type
+      - name
+     properties:
+      type:
+       type: string
+       default: PHOTO
+       description: The type of the album. PHOTO or VIDEO
+      name:
+       type: string
+       default: Best album eva
+       description: The name of the album
+      description:
+       type: string
+       default: This album is so good you have to see it!!!
+       description: The description of the album. Optional
+      assets:
+       type: array
+       items:
+        $ref: '#/components/schemas/Asset'
+    UpdateAlbumReq:
+     type: object
+     required:
+      - _id
+     properties:
+      _id:
+       type: string
+       default: 63b55a24896a7b20abc7c5f8
+       description: The id of the album to update.
+      type:
+       type: string
+       default: PHOTO
+       description: The type of the album. PHOTO or VIDEO
+      name:
+       type: string
+       default: Best album eva
+       description: The name of the album
+      description:
+       type: string
+       default: This album is so good you have to see it!!!
+       description: The description of the album. Optional
+    GetReviewsReq:
+     type: object
+     required:
+      - userId
+     properties:
+      userId:
+       type: string
+       default: 63ae06ff3269ea78ef1a7ac2
+       description: The employee id
+      fromId:
+       type: string
+       default: 63ae06ff3269ea78ef1a7ac2
+       description: The is of the creator of the review
+      page:
+        $ref: '#/components/schemas/Paging'
+    AddReviewReq:
+     type: object
+     required:
+      - userId
+      - attitude
+      - reliability
+      - craftsmanship
+      - communication
+     properties:
+      userId:
+       type: string
+       default: 63ae06ff3269ea78ef1a7ac2
+       description: The employee id
+      comment:
+       type: string
+       default: 'Very good employee'
+       description: A comment the sender left
+      attitude:
+       type: integer
+       default: 3
+       description: Rate of attitude. 1-5
+      reliability:
+       type: integer
+       default: 3
+       description: Rate of reliability. 1-5
+      craftsmanship:
+       type: integer
+       default: 3
+       description: Rate of craftsmanship. 1-5
+      communication:
+       type: integer
+       default: 3
+       description: Rate of communication. 1-5
+      average:
+       type: integer
+       default: 3
+       description: Avg of all the stats.
+    Paging:
+     type: object
+     properties:
+        index:
+         type: integer
+         default: 0
+         description: Current page
+        size:
+         type: integer
+         default: 8
+         description: Amount per page
+    Asset:
+     type: object
+     required:
+      - id
+      - type
+      - title
+      - url
+     properties:
+        id:
+         type: string
+         default: 63ae06ff3269ea78ef1a7ac2
+         description: The id of the asset
+        type:
+         type: string
+         default: PHOTO
+         description: The type of the asset. VIDEO or PHOTO
+        title:
+         type: string
+         default: 'A beautiful photo'
+         description: The title of the asset.
+        url:
+         type: string
+         default: some-url.com
+         description: The url of the asset. Link to aws S3 for photos or youtube for videos
+        description:
+         type: string
+         default: A description for the asset provided by the creator
+         description: The description of the asset. Optional
+    Album:
+     type: object
+     required:
+      - _id
+      - type
+      - userId
+      - name
+      - createdAt
+      - updatedAt
+      - assets
+     properties:
+      _id:
+       type: string
+       default: 63ae06ff3269ea78ef1a7ac2
+       description: The id of the album in the db
+      type:
+       type: string
+       default: PHOTO
+       description: The type of the album, PHOTO or VIDEO
+      userId:
+       type: string
+       default: 63ae06ff3269ea78ef1a7ac2
+       description: The id of the employee that created the album
+      name:
+       type: string
+       default: 'Nice album'
+       description: The name of the album
+      description:
+       type: string
+       default: 'Some description of the album'
+       description: The description of the album given by the creator, optional
+      createdAt:
+       type: integer
+       default: 165845874598
+       description: When the album was created. Timestamp
+      updatedAt:
+       type: integer
+       default: 165845874598
+       description: When the album was last updated. Timestamp
+      assats:
+       type: array
+       items:
+        $ref: '#/components/schemas/Asset'
+       description: The assets in the album, Videos or albums
+      cover:
+       type: string
+       default: some-url.com
+       description: Cover image for the album
+    DbReview:
+     type: object
+     required:
+      - userId
+      - fromId
+      - attitude
+      - reliability
+      - craftsmanship
+      - communication
+      - average
+     properties:
+      _id:
+       type: string
+       default: 63ae06ff3269ea78ef1a7ac2
+       description: The id of the review
+      userId:
+       type: string
+       default: PHOTO
+       description: The id of the reciever of the review
+      fromId:
+       type: string
+       default: 63ae06ff3269ea78ef1a7ac2
+       description: The id of the sender of the review
+      comment:
+       type: string
+       default: 'Very good employee'
+       description: A comment the sender left
+      attitude:
+       type: integer
+       default: 3
+       description: Rate of attitude. 1-5
+      reliability:
+       type: integer
+       default: 3
+       description: Rate of reliability. 1-5
+      craftsmanship:
+       type: integer
+       default: 3
+       description: Rate of craftsmanship. 1-5
+      communication:
+       type: integer
+       default: 3
+       description: Rate of communication. 1-5
+      average:
+       type: integer
+       default: 3
+       description: Avg of all the stats.
+    CreatePostJobReq:
+     type: object
+     required:
+      - title
+      - jobType
+      - dateFrom
+      - dateTo
+      - location
+      - positions
+     properties:
+      title:
+       type: string
+       description: The title of the job
+       default: Kfir and Dana wedding
+      description:
+       type: string
+       description: The description of the job
+       default: Big wedding, alot of people...
+      dateFrom:
+       type: integer
+       description: When does the job start. Timstamp
+       default: 165658942368
+      dateTo:
+       type: integer
+       description: When does the job end. Timstamp
+       default: 165658942987
+      location:
+       $ref: '#/components/schemas/UserLocation'
+      positions:
+       type: array
+       items:
+        $ref: '#/components/schemas/JobPosition'
+    SearchPostJobsReq:
+     type: object
+     properties:
+      search:
+       type: string
+       description: Text to search by
+       default: wedding
+      dateFrom:
+       type: integer
+       description: When job starts, timestamp
+       default: 123656983654
+      dateTo:
+       type: integer
+       description: When job ends, timestamp
+       default: 123656983654
+      positions:
+       type: array
+       items:
+        type: string
+        description: Position to search by
+       default: [WEDDING_VIDEOGRAPHER]
+      page:
+       $ref: '#/components/schemas/Paging'
+    SearchPositionReq:
+     type: object
+     properties:
+      jobType:
+       type: string
+       description: The type of the job
+       default: "WEDDING"
+      dateFrom:
+       type: integer
+       description: When job starts, timestamp
+       default: 12986593577
+      dateTo:
+       type: integer
+       description: When job ends, timestamp
+       default: 12986593577
+      positions:
+       type: array
+       items:
+        type: string
+       description: Position types to query by
+       default: [WEDDING_VIDEOGRAPHER]
+      page:
+       $ref: '#/components/schemas/Paging'
+      status:
+       type: string
+       description: Type of convarsation
+       default: PENDING
+      inConversation:
+       type: boolean
+       description: To be completed
+       default: false
+    listSkills:
+         type: object
+         required:
+           - title
+           - value
+         properties:
+           title:
+             type: string
+             description: The title of the skill
+             default: Wedding videographer
+           value:
+             type: string
+             description: The enum of the skill
+             default: WEDDING_VIDEOGRAPHER
+    PostJobDetailsRes:
+       type: object
+       required:
+         - _id
+         - title
+         - jobType
+         - description
+         - dateFrom
+         - dateTo
+         - location
+         - maxDistance
+         - positions
+       properties:
+         _id:
+           type: string
+           description: The id of the job
+           default: 63b54ceef54040bc4e66c7ba
+         title:
+           type: string
+           description: The title of the job
+           default: Kfir and Dana wedding
+         description:
+           type: string
+           description: The description of the job
+           default: Big wedding, alot of people...
+         dateFrom:
+           type: integer
+           description: When does the job start. Timstamp
+           default: 165658942368
+         dateTo:
+           type: integer
+           description: When does the job end. Timstamp
+           default: 165658942987
+         location:
+           $ref: '#/components/schemas/UserLocation'
+         maxDistance:
+           type: integer
+           description: To be completed
+           default: 89
+         positions:
+           type: array
+           items:
+            $ref: '#/components/schemas/Position'
+    JobPosition:
+     type: object
+     required:
+      - type
+      - amount
+     properties:
+      type:
+       type: array
+       items:
+        type: string
+        description: job type
+       default: [WEDDING_VIDEOGRAPHER]
+      amount:
+       type: integer
+       description: To be completed
+       default: 2
+    Position:
+     type: object
+     required:
+      - _id
+      - jobId
+      - type
+      - amount
+     properties:
+      _id:
+       type: string
+       default: 63b8ada077a0e45d84c7dba5
+       description: The id of the position
+      jobId:
+       type: string
+       default: 63b8ada077a0e45d84c7dba4
+       description: The id of the job
+      type:
+       type: array
+       items:
+        type: string
+       default: [WEDDING_VIDEOGRAPHER, DRONE_OPERATOR]
+       description: The types of the position
+      amount:
+       type: integer
+       default: 2
+       description: To be completed
+      conversation:
+       type: array
+       items:
+        $ref: '#/components/schemas/DbJobConversation'
+    DbJobConversation:
+     type: object
+     required:
+      - _id
+      - positionId
+      - participants
+      - messages
+      - status
+      - createdAt
+     properties:
+      _id:
+       type: string
+       default: 63b8adc977a0e45d84c7dba9
+       description: The id of the convarsation
+      positionId:
+       type: string
+       default: 63b8ada077a0e45d84c7dba5
+       description: The id of the position
+      userId:
+       type: string
+       default: 63b30d0cde702f1f21d88368
+       description: To be completed
+      participants:
+       type: array
+       items:
+        $ref: '#/components/schemas/UserAttached'
+      messages:
+       type: array
+       items:
+        $ref: '#/components/schemas/ConversationMessage'
+       description: The array of the messages in the converation
+      payment:
+       $ref: '#/components/schemas/PaymentAgreement'
+      status:
+       type: string
+       default: PENDING
+       description: The status of the conversation. PENDING || LEFT || APPROVED || REJECTED
+      createdAt:
+       type: string
+       default: 1665984547899
+       description: Creation date, timestamp
+      updatedAt:
+       type: string
+       default: 1665984547899
+       description: Last update date, timestamp
+    ConversationMessage:
+     type: object
+     required:
+      - fromId
+      - message
+      - history
+     properties:
+      fromId:
+       type: string
+       default: 63b30d0cde702f1f21d88368
+       description: The id of the user who sent the message
+      message:
+       type: string
+       default: Hi there!
+       description: The content of the message
+      updatedAt:
+       type: integer
+       default: 12569548786212
+       description: When the message was last updated. Timestamp
+      isDeleted:
+       type: boolean
+       default: false
+       description: Was the message deleted
+      history:
+       type: array
+       items:
+        type: object
+        properties:
+         message:
+          type: string
+          default: Hij thir!
+         updatedAt:
+          type: integer
+          default: 16685987589
+       description: The history of the message
+    PaymentAgreement:
+     type: object
+     properties:
+      amount:
+       type: integer
+       default: 68
+       description: The amount of payment that was agreed uppon
+      currency:
+       type: string
+       default: NIS
+       description: The currency in which the payment would be due

@@ -1,0 +1,1 @@
+export const CANCELLATION_EXPIRE_IN = 1000 * 60;

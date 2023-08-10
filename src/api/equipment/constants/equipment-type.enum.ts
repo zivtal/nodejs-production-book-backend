@@ -1,0 +1,8 @@
+export enum EquipmentTypeEnum {
+  LENS = 'LENS',
+  TELECONVERTER = 'TELECONVERTER',
+  CAMERA = 'CAMERA',
+  CAMCORDER = 'CAMCORDER',
+  DRONE = 'DRONE',
+  GIMBAL = 'GIMBAL',
+}

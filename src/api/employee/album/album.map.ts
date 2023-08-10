@@ -1,0 +1,9 @@
+export const GET_ALBUMS = 'getAlbums';
+export const GET_ALBUM = 'getAlbum';
+export const ADD_ALBUM = 'addAlbum';
+export const ADD_ALBUM_ASSETS = 'addAlbumAssets';
+export const UPDATE_ALBUM = 'updateAlbum';
+export const UPDATE_ASSET = 'updateAsset';
+export const REMOVE_ALBUM = 'removeAlbum';
+export const UPLOAD_PHOTO = 'uploadPhoto';
+export const REMOVE_ALBUM_ASSETS = 'removeAlbumAssets';

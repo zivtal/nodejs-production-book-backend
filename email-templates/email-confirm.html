@@ -1,0 +1,54 @@
+<head>
+  <meta name="viewport" content="width=device-width" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>SendGrid Signup Confirmation</title>
+
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background-color: #fdfdfd;
+      margin: 0;
+      padding: 0;
+      -webkit-text-size-adjust: 100%;
+      line-height: 1.5;
+      -ms-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      height: 100% !important;
+      width: 100% !important;
+    }
+
+    .content {
+      text-align: center;
+    }
+
+    .content > * {
+      margin: 8px auto;
+    }
+
+    .verification-code {
+      padding: 16px;
+      outline: 1px solid black;
+      font-size: 16px;
+      font-weight: 700;
+      max-width: fit-content;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content">
+    <img src="{logo}" alt="Company logo" />
+
+    <p>{firstName} {lastName},</p>
+
+    <p>In order to continue, please enter the following confirmation code.</p>
+
+    <p class="verification-code">{verification-code}</p>
+
+    <p>© {copyright}</p>
+  </div>
+</body>

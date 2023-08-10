@@ -1,0 +1,4 @@
+export enum UserErrorsEnum {
+  FAILED = 'VALIDATE.GENERAL',
+  ALREADY_EXISTS = 'AUTH.ALREADY_EXISTS',
+}

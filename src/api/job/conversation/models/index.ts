@@ -1,0 +1,11 @@
+export { DocumentConversation } from '../../../../shared/models';
+export * from './conversation-agreement';
+export * from './conversation-status';
+export * from './create-conversation';
+export * from './create-conversation-req';
+export * from './create-conversation-res';
+export * from './get-conversation-res';
+export * from './delete-conversation-req';
+export * from './send-conversation-req';
+export * from './update-conversation-req';
+export * from './update-conversation-status-req';

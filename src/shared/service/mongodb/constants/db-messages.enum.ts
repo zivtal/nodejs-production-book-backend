@@ -1,0 +1,4 @@
+export enum DbMessages {
+  INVALID_ID = 'VALIDATE.INVALID_ID',
+  QUERY_FAILED = 'VALIDATE.QUERY_FAILED',
+}
